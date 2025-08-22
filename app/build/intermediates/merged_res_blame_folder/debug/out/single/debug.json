@@ -1,0 +1,54 @@
+[
+    {
+        "merged": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-merged_res-63:/xml_backup_rules.xml.flat",
+        "source": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-main-65:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.worthmytime.app-merged_res-63:/drawable_ic_home.xml.flat",
+        "source": "com.worthmytime.app-main-65:/drawable/ic_home.xml"
+    },
+    {
+        "merged": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-merged_res-63:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-main-65:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-merged_res-63:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-main-65:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.worthmytime.app-merged_res-63:/drawable_ic_goals.xml.flat",
+        "source": "com.worthmytime.app-main-65:/drawable/ic_goals.xml"
+    },
+    {
+        "merged": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-merged_res-63:/drawable_ic_goals.xml.flat",
+        "source": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-main-65:/drawable/ic_goals.xml"
+    },
+    {
+        "merged": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-merged_res-63:/xml_data_extraction_rules.xml.flat",
+        "source": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-main-65:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.worthmytime.app-merged_res-63:/drawable_ic_settings.xml.flat",
+        "source": "com.worthmytime.app-main-65:/drawable/ic_settings.xml"
+    },
+    {
+        "merged": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-merged_res-63:/drawable_ic_insights.xml.flat",
+        "source": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-main-65:/drawable/ic_insights.xml"
+    },
+    {
+        "merged": "com.worthmytime.app-merged_res-63:/drawable_ic_insights.xml.flat",
+        "source": "com.worthmytime.app-main-65:/drawable/ic_insights.xml"
+    },
+    {
+        "merged": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-merged_res-63:/drawable_ic_home.xml.flat",
+        "source": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-main-65:/drawable/ic_home.xml"
+    },
+    {
+        "merged": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-merged_res-63:/drawable_ic_settings.xml.flat",
+        "source": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-main-65:/drawable/ic_settings.xml"
+    },
+    {
+        "merged": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-merged_res-63:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "/Users/noahcaulfield/.gradle/daemon/8.14.3/com.worthmytime.app-main-65:/drawable/ic_launcher_foreground.xml"
+    }
+]

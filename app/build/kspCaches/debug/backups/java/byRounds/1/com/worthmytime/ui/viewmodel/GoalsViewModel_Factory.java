@@ -1,0 +1,56 @@
+package com.worthmytime.ui.viewmodel;
+
+import com.worthmytime.data.repo.GoalsRepository;
+import com.worthmytime.data.repo.ProfileRepository;
+import com.worthmytime.data.repo.TaxRepository;
+import dagger.internal.DaggerGenerated;
+import dagger.internal.Factory;
+import dagger.internal.QualifierMetadata;
+import dagger.internal.ScopeMetadata;
+import javax.annotation.processing.Generated;
+import javax.inject.Provider;
+
+@ScopeMetadata
+@QualifierMetadata
+@DaggerGenerated
+@Generated(
+    value = "dagger.internal.codegen.ComponentProcessor",
+    comments = "https://dagger.dev"
+)
+@SuppressWarnings({
+    "unchecked",
+    "rawtypes",
+    "KotlinInternal",
+    "KotlinInternalInJava"
+})
+public final class GoalsViewModel_Factory implements Factory<GoalsViewModel> {
+  private final Provider<GoalsRepository> goalsRepositoryProvider;
+
+  private final Provider<ProfileRepository> profileRepositoryProvider;
+
+  private final Provider<TaxRepository> taxRepositoryProvider;
+
+  public GoalsViewModel_Factory(Provider<GoalsRepository> goalsRepositoryProvider,
+      Provider<ProfileRepository> profileRepositoryProvider,
+      Provider<TaxRepository> taxRepositoryProvider) {
+    this.goalsRepositoryProvider = goalsRepositoryProvider;
+    this.profileRepositoryProvider = profileRepositoryProvider;
+    this.taxRepositoryProvider = taxRepositoryProvider;
+  }
+
+  @Override
+  public GoalsViewModel get() {
+    return newInstance(goalsRepositoryProvider.get(), profileRepositoryProvider.get(), taxRepositoryProvider.get());
+  }
+
+  public static GoalsViewModel_Factory create(Provider<GoalsRepository> goalsRepositoryProvider,
+      Provider<ProfileRepository> profileRepositoryProvider,
+      Provider<TaxRepository> taxRepositoryProvider) {
+    return new GoalsViewModel_Factory(goalsRepositoryProvider, profileRepositoryProvider, taxRepositoryProvider);
+  }
+
+  public static GoalsViewModel newInstance(GoalsRepository goalsRepository,
+      ProfileRepository profileRepository, TaxRepository taxRepository) {
+    return new GoalsViewModel(goalsRepository, profileRepository, taxRepository);
+  }
+}
