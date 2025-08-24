@@ -21,6 +21,7 @@ import com.worthmytime.ui.viewmodel.CalculatorViewModel
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,6 +32,7 @@ fun HomeScreen(
     val recentHistory by viewModel.recentHistory.collectAsState()
     val price by viewModel.price.collectAsState()
     val selectedDisplayUnit by remember { derivedStateOf { viewModel.selectedDisplayUnit } }
+    var showAddGoalDialog by remember { mutableStateOf(false) }
     
     LazyColumn(
         modifier = Modifier
@@ -96,7 +98,7 @@ fun HomeScreen(
                         }
                         
                         OutlinedButton(
-                            onClick = { viewModel.onAddAsGoal() },
+                            onClick = { showAddGoalDialog = true },
                             modifier = Modifier.weight(1f),
                             enabled = price.isNotEmpty() && price.toDoubleOrNull() != null
                         ) {
@@ -187,6 +189,86 @@ fun HomeScreen(
             }
         }
     }
+    
+    // Add goal dialog
+    if (showAddGoalDialog) {
+        AddGoalFromHomeDialog(
+            price = price.toDoubleOrNull() ?: 0.0,
+            onGoalAdded = { label, category ->
+                viewModel.onAddAsGoalWithDetails(label, category)
+                showAddGoalDialog = false
+            },
+            onDismiss = { showAddGoalDialog = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddGoalFromHomeDialog(
+    price: Double,
+    onGoalAdded: (String, com.worthmytime.domain.model.GoalCategory) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var labelText by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf(com.worthmytime.domain.model.GoalCategory.LUXURY) }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Add as Goal") },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = "Price: $${price}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+                
+                OutlinedTextField(
+                    value = labelText,
+                    onValueChange = { labelText = it },
+                    label = { Text("Goal name (optional)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("e.g., New laptop, Vacation fund") }
+                )
+                
+                Text(
+                    text = "Category",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    com.worthmytime.domain.model.GoalCategory.values().forEach { category ->
+                        FilterChip(
+                            onClick = { selectedCategory = category },
+                            label = { Text(category.name.lowercase().capitalize()) },
+                            selected = selectedCategory == category
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val finalLabel = if (labelText.isNotEmpty()) labelText else "Goal - $${price}"
+                    onGoalAdded(finalLabel, selectedCategory)
+                }
+            ) {
+                Text("Add Goal")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

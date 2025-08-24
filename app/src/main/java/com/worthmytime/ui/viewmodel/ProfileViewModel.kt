@@ -15,7 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
-    private val taxRepository: TaxRepository
+    private val taxRepository: TaxRepository,
+    private val historyRepository: com.worthmytime.data.repo.HistoryRepository
 ) : ViewModel() {
     
     val profile: StateFlow<Profile> = profileRepository.profile.stateIn(
@@ -153,5 +154,37 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             profileRepository.updatePrivacyHideDollarsInHistory(hide)
         }
+    }
+    
+    fun clearHistory() {
+        viewModelScope.launch {
+            historyRepository.clearAllHistory()
+        }
+    }
+    
+    fun exportData(): String {
+        // This would typically export to a file, but for now we'll return a JSON string
+        // In a real implementation, you'd use Android's file system APIs
+        return """
+        {
+            "exportDate": "${java.util.Date()}",
+            "profile": {
+                "hourlyRate": ${profile.value.hourlyRate},
+                "annualSalary": ${profile.value.annualSalary},
+                "hoursPerWeek": ${profile.value.hoursPerWeek},
+                "effectiveTaxPct": ${profile.value.effectiveTaxPct},
+                "incomeType": "${profile.value.incomeType}",
+                "salesTaxMode": "${profile.value.salesTaxMode}",
+                "salesTaxPct": ${profile.value.salesTaxPct},
+                "salesTaxState": "${profile.value.salesTaxState}",
+                "includeSalesTaxInCalc": ${profile.value.includeSalesTaxInCalc},
+                "theme": "${profile.value.theme}",
+                "defaultDisplayUnit": "${profile.value.defaultDisplayUnit}",
+                "autoLogChecks": ${profile.value.autoLogChecks},
+                "historyLimit": ${profile.value.historyLimit},
+                "privacyHideDollarsInHistory": ${profile.value.privacyHideDollarsInHistory}
+            }
+        }
+        """.trimIndent()
     }
 }

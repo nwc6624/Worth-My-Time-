@@ -180,6 +180,21 @@ class CalculatorViewModel @Inject constructor(
         }
     }
     
+    fun onAddAsGoalWithDetails(label: String, category: GoalCategory) {
+        val priceValue = price.value.toDoubleOrNull() ?: return
+        if (priceValue <= 0) return
+        
+        viewModelScope.launch {
+            goalsRepository.addGoal(
+                label = label,
+                price = priceValue,
+                category = category,
+                useTaxSnapshot = false,
+                salesTaxPctAtCreation = null
+            )
+        }
+    }
+    
     fun getDisplayValue(result: CalculationResult): Double {
         return when (selectedDisplayUnit) {
             DisplayUnit.HOURS -> Calculator.roundHours(result.hours)

@@ -2,6 +2,7 @@ package com.worthmytime.ui.settings
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,6 +16,11 @@ import com.worthmytime.R
 import com.worthmytime.domain.model.IncomeType
 import com.worthmytime.domain.model.SalesTaxMode
 import com.worthmytime.ui.viewmodel.ProfileViewModel
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +68,35 @@ fun SettingsScreen(
                 profile = profile,
                 onBenchmarksChange = viewModel::updateLifestyleBenchmarks
             )
+        }
+        
+        item {
+            DisplaySection(
+                profile = profile,
+                onDefaultDisplayUnitChange = viewModel::updateDefaultDisplayUnit,
+                onThemeChange = viewModel::updateTheme
+            )
+        }
+        
+        item {
+            BehaviorSection(
+                profile = profile,
+                onAutoLogChecksChange = viewModel::updateAutoLogChecks,
+                onHistoryLimitChange = viewModel::updateHistoryLimit,
+                onClearHistory = { viewModel.clearHistory() }
+            )
+        }
+        
+        item {
+            PrivacySection(
+                profile = profile,
+                onHideDollarsChange = viewModel::updatePrivacyHideDollarsInHistory,
+                onExportData = { viewModel.exportData() }
+            )
+        }
+        
+        item {
+            AboutSection()
         }
     }
 }
@@ -172,6 +207,7 @@ fun SalesTaxSection(
     onIncludeSalesTaxChange: (Boolean) -> Unit
 ) {
     var salesTaxPctText by remember(profile.salesTaxPct) { mutableStateOf(profile.salesTaxPct.toString()) }
+    var showStateDialog by remember { mutableStateOf(false) }
     
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -226,10 +262,20 @@ fun SalesTaxSection(
                         suffix = { Text("%") }
                     )
                 } else {
-                    Text(
-                        text = "Using ${profile.salesTaxState} tax rate",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    OutlinedTextField(
+                        value = profile.salesTaxState.ifEmpty { "Select State" },
+                        onValueChange = { },
+                        label = { Text(stringResource(R.string.select_state)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        trailingIcon = {
+                            IconButton(onClick = { showStateDialog = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "Select state"
+                                )
+                            }
+                        }
                     )
                     Text(
                         text = stringResource(R.string.state_tax_subtitle),
@@ -240,6 +286,74 @@ fun SalesTaxSection(
             }
         }
     }
+    
+    // State selection dialog
+    if (showStateDialog) {
+        StateSelectionDialog(
+            currentState = profile.salesTaxState,
+            onStateSelected = { state ->
+                onSalesTaxStateChange(state)
+                showStateDialog = false
+            },
+            onDismiss = { showStateDialog = false }
+        )
+    }
+}
+
+@Composable
+fun StateSelectionDialog(
+    currentState: String,
+    onStateSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val states = listOf(
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+        "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+        "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+        "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+        "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+        "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+        "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
+        "Wisconsin", "Wyoming"
+    )
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Select State") },
+        text = {
+            LazyColumn(
+                modifier = Modifier.heightIn(max = 400.dp)
+            ) {
+                items(states) { state ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onStateSelected(state) }
+                            .padding(vertical = 12.dp, horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = state,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        if (currentState == state) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Selected",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Composable
@@ -317,5 +431,206 @@ fun LifestyleBenchmarksSection(
                 prefix = { Text("$") }
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DisplaySection(
+    profile: com.worthmytime.domain.model.Profile,
+    onDefaultDisplayUnitChange: (com.worthmytime.domain.model.DisplayUnit) -> Unit,
+    onThemeChange: (com.worthmytime.domain.model.Theme) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.display_section),
+                style = MaterialTheme.typography.titleMedium
+            )
+            
+            // Default display unit
+            Column {
+                Text(
+                    text = stringResource(R.string.default_unit),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    com.worthmytime.domain.model.DisplayUnit.values().forEach { unit ->
+                        FilterChip(
+                            onClick = { onDefaultDisplayUnitChange(unit) },
+                            label = { Text(unit.name.lowercase().capitalize()) },
+                            selected = profile.defaultDisplayUnit == unit
+                        )
+                    }
+                }
+            }
+            
+            // Theme selection
+            Column {
+                Text(
+                    text = stringResource(R.string.theme),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    com.worthmytime.domain.model.Theme.values().forEach { theme ->
+                        FilterChip(
+                            onClick = { onThemeChange(theme) },
+                            label = { Text(getThemeDisplayName(theme)) },
+                            selected = profile.theme == theme
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun BehaviorSection(
+    profile: com.worthmytime.domain.model.Profile,
+    onAutoLogChecksChange: (Boolean) -> Unit,
+    onHistoryLimitChange: (Int) -> Unit,
+    onClearHistory: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.behavior_section),
+                style = MaterialTheme.typography.titleMedium
+            )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.auto_log_checks))
+                Switch(
+                    checked = profile.autoLogChecks,
+                    onCheckedChange = onAutoLogChecksChange
+                )
+            }
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.history_limit))
+                Text("${profile.historyLimit} items")
+            }
+            
+            OutlinedButton(
+                onClick = onClearHistory,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.clear_history))
+            }
+        }
+    }
+}
+
+@Composable
+fun PrivacySection(
+    profile: com.worthmytime.domain.model.Profile,
+    onHideDollarsChange: (Boolean) -> Unit,
+    onExportData: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Privacy & Data",
+                style = MaterialTheme.typography.titleMedium
+            )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.hide_dollars_in_history))
+                Switch(
+                    checked = profile.privacyHideDollarsInHistory,
+                    onCheckedChange = onHideDollarsChange
+                )
+            }
+            
+            OutlinedButton(
+                onClick = onExportData,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.export_data))
+            }
+            
+            Text(
+                text = stringResource(R.string.storage_privacy_note),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+fun AboutSection() {
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.about_section),
+                style = MaterialTheme.typography.titleMedium
+            )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.version))
+                Text("1.0.0")
+            }
+            
+            Text(
+                text = "Worth My Time helps you understand the true cost of purchases in terms of your time and effort.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun getThemeDisplayName(theme: com.worthmytime.domain.model.Theme): String {
+    return when (theme) {
+        com.worthmytime.domain.model.Theme.SYSTEM -> stringResource(R.string.system_theme)
+        com.worthmytime.domain.model.Theme.LIGHT -> stringResource(R.string.light_theme)
+        com.worthmytime.domain.model.Theme.DARK -> stringResource(R.string.dark_theme)
     }
 }
