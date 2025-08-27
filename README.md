@@ -14,6 +14,7 @@ An Android app that converts any item's price into "life hours" (hours, workdays
 
 ## Architecture
 
+
 - **Platform**: Android (Kotlin, Jetpack Compose, Material 3)
 - **Architecture**: MVVM with Kotlin Flow/StateFlow
 - **Dependency Injection**: Hilt
