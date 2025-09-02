@@ -4,6 +4,7 @@ An Android app that converts any item's price into "life hours" (hours, workdays
 
 ## Features
 
+
 - **Price to Time Conversion**: Convert any price into hours, workdays, or workweeks of labor
 - **Tax Support**: Includes optional sales tax (manual or by US state)
 - **Lifestyle Equivalents**: See prices in terms of coffees, days of groceries, streaming months
